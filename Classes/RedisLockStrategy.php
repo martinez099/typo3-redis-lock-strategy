@@ -106,7 +106,7 @@ class RedisLockStrategy implements LockingStrategyInterface
             $this->ttl = (int) $config['ttl'];
         }
 
-        $this->redis   = new \Redis();
+        $this->redis = new \Redis();
         $this->redis->connect($config['host'], $port);
         if (\array_key_exists('auth', $config)) {
             $this->redis->auth($config['auth']);
@@ -117,6 +117,14 @@ class RedisLockStrategy implements LockingStrategyInterface
         $this->name = sprintf('lock:name:%s', $subject);
         $this->mutex = sprintf('lock:mutex:%s', $subject);
         $this->value = uniqid();
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function __destruct(void)
+    {
+        $this->release();
     }
 
     /**
